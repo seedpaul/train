@@ -1,63 +1,66 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
+// Import necessary WPILib and CTRE classes
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-
-import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
-import frc.robot.Subsystems.LED;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Joystick;
-
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
-import frc.robot.Subsystems.LED;
 
-/**
- * This is a demo program showing the use of the DifferentialDrive class. Runs the motors with
- * arcade steering.
- */
 public class Robot extends TimedRobot {
+    // Define motor controllers
+    private final WPI_TalonSRX leftFrontMotor = new WPI_TalonSRX(50); // Replace with actual CAN ID
+    private final WPI_TalonSRX leftRearMotor = new WPI_TalonSRX(5);  // Replace with actual CAN ID
+    private final WPI_TalonSRX rightFrontMotor = new WPI_TalonSRX(6); // Replace with actual CAN ID
+    private final WPI_TalonSRX rightRearMotor = new WPI_TalonSRX(7);  // Replace with actual CAN ID
 
-  private final WPI_VictorSPX leftFront = new WPI_VictorSPX(10);
-  private final WPI_VictorSPX leftRear = new WPI_VictorSPX(9);
-  private final WPI_VictorSPX rightFront = new WPI_VictorSPX(11);
-  private final WPI_VictorSPX rightRear = new WPI_VictorSPX(12);
+    // DifferentialDrive system
+    private DifferentialDrive driveTrain;
 
-  private final MotorControllerGroup leftMCG = new MotorControllerGroup(leftFront, leftRear);
-  private final MotorControllerGroup rightMCG = new MotorControllerGroup(rightFront, rightRear);
+    // Xbox controller
+    private final XboxController controller = new XboxController(0); // 0 for first USB port
 
-  private final DifferentialDrive m_robotDrive = new DifferentialDrive(leftMCG, rightMCG);
-  private final Joystick sidewinder = new Joystick(0);
+    @Override
+    public void robotInit() {
+        // Configure motors to be in brushed mode
+        leftFrontMotor.configFactoryDefault();
+        leftRearMotor.configFactoryDefault();
+        rightFrontMotor.configFactoryDefault();
+        rightRearMotor.configFactoryDefault();
 
-  private final VictorSP headVictor = new VictorSP(0);
-  private final LED led = new LED();
+        leftFrontMotor.setNeutralMode(NeutralMode.Brake);
+        leftRearMotor.setNeutralMode(NeutralMode.Brake);
+        rightFrontMotor.setNeutralMode(NeutralMode.Brake);
+        rightRearMotor.setNeutralMode(NeutralMode.Brake);
 
-  @Override
-  public void robotInit() {
-    // We need to invert one side of the drivetrain so that positive voltages
-    // result in both sides moving forward. Depending on how your robot's
-    // gearbox is constructed, you might have to invert the left side instead.
-    rightMCG.setInverted(true);
-    led.start();
-  }
+        // Set motors to brushed mode (use `ControlMode.PercentOutput` for percent control)
+        leftFrontMotor.set(ControlMode.PercentOutput, 0);
+        leftRearMotor.set(ControlMode.PercentOutput, 0);
+        rightFrontMotor.set(ControlMode.PercentOutput, 0);
+        rightRearMotor.set(ControlMode.PercentOutput, 0);
 
-  @Override
-  public void teleopPeriodic() {
-    // Drive with arcade drive.
-    // That means that the Y axis drives forward
-    // and backward, and the X turns left and right.
-    m_robotDrive.arcadeDrive(sidewinder.getRawAxis(1),sidewinder.getRawAxis(0));
-    
-    double speed =  sidewinder.getRawAxis(2);
+        // Link left and right motors for DifferentialDrive
+        leftRearMotor.follow(leftFrontMotor);
+        rightRearMotor.follow(rightFrontMotor);
 
-    if(sidewinder.getTriggerPressed()){
-      headVictor.set(speed);
+        // Initialize DifferentialDrive
+        driveTrain = new DifferentialDrive(leftFrontMotor, rightFrontMotor);
     }
-    if(sidewinder.getTriggerReleased()){
-      headVictor.set(0.0);
+
+    @Override
+    public void teleopPeriodic() {
+      // Arcade drive (using the raw axis values for forward and rotation)
+      double forward = controller.getRawAxis(4);  // Left stick Y-axis (invert if needed)
+      double rotation = controller.getRawAxis(1);  // Right stick X-axis (invert if needed)
+
+      driveTrain.arcadeDrive(forward, rotation);
     }
-  }
+
+    @Override
+    public void disabledInit() {
+        // Stop the motors when disabled
+        leftFrontMotor.set(0);
+        rightFrontMotor.set(0);
+    }
 }
