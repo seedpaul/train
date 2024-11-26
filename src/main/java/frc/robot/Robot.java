@@ -1,4 +1,3 @@
-// Import necessary WPILib and CTRE classes
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -7,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import frc.robot.Subsystems.LED;
 
 public class Robot extends TimedRobot {
     // Define motor controllers
@@ -20,6 +20,8 @@ public class Robot extends TimedRobot {
 
     // Xbox controller
     private final XboxController controller = new XboxController(0); // 0 for first USB port
+
+    private final LED led = new LED();
 
     @Override
     public void robotInit() {
@@ -46,6 +48,8 @@ public class Robot extends TimedRobot {
 
         // Initialize DifferentialDrive
         driveTrain = new DifferentialDrive(leftFrontMotor, rightFrontMotor);
+
+        led.start();
     }
 
     @Override
