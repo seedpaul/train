@@ -3,12 +3,10 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 import frc.robot.Subsystems.LED;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import frc.robot.Subsystems.LED;
 
 public class Robot extends TimedRobot {
 
@@ -18,7 +16,6 @@ public class Robot extends TimedRobot {
   private final WPI_VictorSPX rightRear = new WPI_VictorSPX(12);
 
   private DifferentialDrive driveTrain;
-  private final Joystick sidewinder = new Joystick(0);
 
     // Xbox controller
     private final XboxController controller = new XboxController(0); // 0 for first USB port
@@ -48,7 +45,7 @@ public class Robot extends TimedRobot {
         rightRear.follow(rightFront);
 
         // Initialize DifferentialDrive
-        driveTrain = new DifferentialDrive(leftFrontMotor, rightFrontMotor);
+        driveTrain = new DifferentialDrive(leftFront, rightFront);
 
         led.start();
     }
@@ -58,16 +55,7 @@ public class Robot extends TimedRobot {
     // Drive with arcade drive.
     // That means that the Y axis drives forward
     // and backward, and the X turns left and right.
-    driveTrain.arcadeDrive(sidewinder.getRawAxis(1),sidewinder.getRawAxis(0));
-    
-    double speed =  sidewinder.getRawAxis(2);
-
-    if(sidewinder.getTriggerPressed()){
-      headVictor.set(speed);
-    }
-    if(sidewinder.getTriggerReleased()){
-      headVictor.set(0.0);
-    }
+    driveTrain.arcadeDrive(controller.getRawAxis(1),controller.getRawAxis(0));
   }
   @Override
   public void disabledInit() {
