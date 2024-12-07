@@ -3,11 +3,11 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 import frc.robot.Subsystems.LED;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 
 public class Robot extends TimedRobot {
 
@@ -17,10 +17,11 @@ public class Robot extends TimedRobot {
   private final WPI_VictorSPX rightRear = new WPI_VictorSPX(12);
 
   private DifferentialDrive driveTrain;
-  private final Joystick sidewinder = new Joystick(0);
 
-  private final VictorSP headVictor = new VictorSP(0);
-  private final LED led = new LED();
+    // Xbox controller
+    private final Joystick sidewinder = new Joystick(0);
+    private final VictorSP headVictor = new VictorSP(0);
+    private final LED led = new LED();
 
   @Override
   public void robotInit() {
@@ -47,8 +48,8 @@ public class Robot extends TimedRobot {
         // Initialize DifferentialDrive
         driveTrain = new DifferentialDrive(leftFront, rightFront);
 
-    led.start();
-  }
+        led.start();
+    }
 
   @Override
   public void teleopPeriodic() {
